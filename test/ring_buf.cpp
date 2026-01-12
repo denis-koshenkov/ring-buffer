@@ -47,3 +47,19 @@ TEST(RingBuf, CreateReturnsBufReturnedFromGetInstBuf)
     CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, rc);
     CHECK_EQUAL((void *)&inst_buf, (void *)ring_buf);
 }
+
+TEST(RingBuf, PushPopUint16)
+{
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    uint16_t push_element = 0xABCD;
+    uint8_t push_rc = ring_buf_push(ring_buf, &push_element);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, push_rc);
+
+    uint16_t pop_element = 0;
+    uint8_t pop_rc = ring_buf_pop(ring_buf, &pop_element);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, pop_rc);
+
+    CHECK_EQUAL(push_element, pop_element);
+}

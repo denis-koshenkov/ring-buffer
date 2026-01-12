@@ -54,6 +54,10 @@ typedef enum {
 
 uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg);
 
+uint8_t ring_buf_push(RingBuf self, const void *const element);
+
+uint8_t ring_buf_pop(RingBuf self, void *const element);
+
 #ifdef __cplusplus
 }
 #endif

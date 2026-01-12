@@ -6,7 +6,9 @@ extern "C"
 {
 #endif
 
-struct RingBufStruct {};
+struct RingBufStruct {
+    uint16_t element;
+};
 
 #ifdef __cplusplus
 }
