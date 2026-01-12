@@ -7,7 +7,10 @@ extern "C"
 #endif
 
 struct RingBufStruct {
-    uint16_t element;
+    /** Buffer to hold the elements. */
+    void *buffer;
+    /** Size of one element in bytes. */
+    size_t elem_size;
 };
 
 #ifdef __cplusplus

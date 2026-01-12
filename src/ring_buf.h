@@ -46,6 +46,10 @@ typedef void *(*RingBufGetInstBuf)(void *user_data);
 typedef struct {
     RingBufGetInstBuf get_inst_buf;
     void *get_inst_buf_user_data;
+    /** Size of one element in bytes. */
+    size_t elem_size;
+    /** Buffer to store the elements, must be of size (num_elements * elem_size). */
+    void *buffer;
 } RingBufInitCfg;
 
 typedef enum {
