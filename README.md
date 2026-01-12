@@ -1,2 +1,2 @@
-# ring-buffer
+# Ring Buffer
 A lightweight ring buffer implementation for embedded systems
