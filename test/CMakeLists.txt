@@ -11,6 +11,8 @@ add_subdirectory(
     ${CMAKE_CURRENT_BINARY_DIR}/cpputest
 )
 
+add_subdirectory(mock)
+
 target_link_libraries(run_tests PRIVATE
     CppUTest
     CppUTestExt
