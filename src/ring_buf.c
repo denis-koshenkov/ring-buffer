@@ -16,6 +16,19 @@ static bool is_empty(RingBuf self)
     return ((self->head == self->tail) && !self->full);
 }
 
+/**
+ * @brief Check whether ring buffer is full.
+ *
+ * @param[in] self Ring buffer instance.
+ *
+ * @retval true Ring buffer is full.
+ * @retval false Ring buffer is not full.
+ */
+static bool is_full(RingBuf self)
+{
+    return self->full;
+}
+
 uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg)
 {
     *inst = cfg->get_inst_buf(cfg->get_inst_buf_user_data);
@@ -31,6 +44,10 @@ uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg)
 
 uint8_t ring_buf_push(RingBuf self, const void *const element)
 {
+    if (is_full(self)) {
+        return RING_BUF_RESULT_CODE_NO_DATA;
+    }
+
     memcpy(self->buffer + (self->head * self->elem_size), element, self->elem_size);
     self->head = (self->head + 1) % self->num_elems;
     if (self->head == self->tail) {

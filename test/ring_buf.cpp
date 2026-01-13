@@ -166,3 +166,27 @@ TEST(RingBuf, InitialPopFails)
     uint8_t rc = ring_buf_pop(ring_buf, &elem);
     CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc);
 }
+
+TEST(RingBuf, PushFailsWhenFull)
+{
+    uint32_t buffer[4];
+    init_cfg.buffer = &buffer;
+    init_cfg.elem_size = sizeof(uint32_t);
+    init_cfg.num_elems = 4;
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    uint32_t elem_1 = 0x01234567;
+    uint32_t elem_2 = 0x89ABCDEF;
+    uint32_t elem_3 = 0x5A5A5A5A;
+    uint32_t elem_4 = 0x0F0F0F0F;
+    push(&elem_1);
+    push(&elem_2);
+    push(&elem_3);
+    push(&elem_4);
+
+    /* Buffer is now full */
+    uint32_t elem_5 = 0x42;
+    uint8_t rc = ring_buf_push(ring_buf, &elem_5);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc);
+}
