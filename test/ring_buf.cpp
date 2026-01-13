@@ -252,3 +252,57 @@ TEST(RingBuf, PopFailsWhenEmpty)
     uint8_t rc = ring_buf_pop(ring_buf, &popped_elem4);
     CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc);
 }
+
+TEST(RingBuf, StressTestSize1)
+{
+    uint8_t buffer;
+    init_cfg.buffer = &buffer;
+    init_cfg.elem_size = sizeof(uint8_t);
+    init_cfg.num_elems = 1;
+
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    /* Buffer initially empty, pop should fail */
+    uint8_t unused1;
+    uint8_t rc_1 = ring_buf_pop(ring_buf, &unused1);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc_1);
+
+    /* There is space for one element, push should succeed */
+    uint8_t elem1 = 0x3C;
+    push(&elem1);
+
+    /* Buffer now full, push should fail */
+    uint8_t unused2 = 0x4B;
+    uint8_t rc_2 = ring_buf_push(ring_buf, &unused2);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc_2);
+
+    /* Buffer still full, push should fail */
+    uint8_t unused3 = 0xA5;
+    uint8_t rc_3 = ring_buf_push(ring_buf, &unused3);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc_3);
+
+    /* Pop the only element in the buffer */
+    uint8_t popped_elem1 = 0;
+    pop(&popped_elem1);
+    CHECK_EQUAL(elem1, popped_elem1);
+
+    /* Push another element into the buffer */
+    uint8_t elem2 = 0x69;
+    push(&elem2);
+
+    /* Buffer now full, push should fail */
+    uint8_t unused4 = 0x87;
+    uint8_t rc_4 = ring_buf_push(ring_buf, &unused4);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc_4);
+
+    /* Pop the only element in the buffer */
+    uint8_t popped_elem2 = 0;
+    pop(&popped_elem2);
+    CHECK_EQUAL(elem2, popped_elem2);
+
+    /* Buffer is now empty, pop should fail */
+    uint8_t unused5;
+    uint8_t rc_5 = ring_buf_pop(ring_buf, &unused5);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc_5);
+}
