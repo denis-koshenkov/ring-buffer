@@ -107,7 +107,7 @@ TEST(RingBuf, PushPopUint32)
 TEST(RingBuf, PushPopThreeElemsUint8)
 {
     uint8_t buffer[3];
-    init_cfg.buffer = &buffer;
+    init_cfg.buffer = buffer;
     init_cfg.elem_size = sizeof(uint8_t);
     init_cfg.num_elems = 3;
 
@@ -144,7 +144,7 @@ static void push_pop_uint16(uint16_t elem)
 TEST(RingBuf, PushPopUint16MoreThanBufSize)
 {
     uint16_t buffer[2];
-    init_cfg.buffer = &buffer;
+    init_cfg.buffer = buffer;
     init_cfg.elem_size = sizeof(uint16_t);
     init_cfg.num_elems = 2;
 
@@ -170,7 +170,7 @@ TEST(RingBuf, InitialPopFails)
 TEST(RingBuf, PushFailsWhenFull)
 {
     uint32_t buffer[4];
-    init_cfg.buffer = &buffer;
+    init_cfg.buffer = buffer;
     init_cfg.elem_size = sizeof(uint32_t);
     init_cfg.num_elems = 4;
     uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
@@ -194,7 +194,7 @@ TEST(RingBuf, PushFailsWhenFull)
 TEST(RingBuf, PushAfterFull)
 {
     uint16_t buffer[2];
-    init_cfg.buffer = &buffer;
+    init_cfg.buffer = buffer;
     init_cfg.elem_size = sizeof(uint16_t);
     init_cfg.num_elems = 2;
 
@@ -217,4 +217,38 @@ TEST(RingBuf, PushAfterFull)
 
     /* There is now one free slot - push should succeed */
     push(&elem3);
+}
+
+TEST(RingBuf, PopFailsWhenEmpty)
+{
+    uint8_t buffer[3];
+    init_cfg.buffer = buffer;
+    init_cfg.elem_size = sizeof(uint8_t);
+    init_cfg.num_elems = 3;
+
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    uint8_t elem1 = 0xF0;
+    uint8_t elem2 = 0x1E;
+    uint8_t elem3 = 0xD2;
+    uint16_t popped_elem1 = 0;
+    uint16_t popped_elem2 = 0;
+    uint16_t popped_elem3 = 0;
+
+    push(&elem1);
+    push(&elem2);
+    push(&elem3);
+
+    pop(&popped_elem1);
+    CHECK_EQUAL(elem1, popped_elem1);
+    pop(&popped_elem2);
+    CHECK_EQUAL(elem2, popped_elem2);
+    pop(&popped_elem3);
+    CHECK_EQUAL(elem3, popped_elem3);
+
+    /* At this point, buffer is empty -> pop should fail */
+    uint16_t popped_elem4;
+    uint8_t rc = ring_buf_pop(ring_buf, &popped_elem4);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc);
 }
