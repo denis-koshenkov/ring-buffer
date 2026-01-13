@@ -48,6 +48,8 @@ typedef struct {
     void *get_inst_buf_user_data;
     /** Size of one element in bytes. */
     size_t elem_size;
+    /** Maximum number of elements that can be in the buffer at the same time. */
+    size_t num_elems;
     /** Buffer to store the elements, must be of size (num_elements * elem_size). */
     void *buffer;
 } RingBufInitCfg;

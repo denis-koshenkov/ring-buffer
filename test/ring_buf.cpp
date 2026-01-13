@@ -16,8 +16,8 @@ RingBufInitCfg init_cfg;
 
 void *get_inst_buf_user_data = (void *)0x20;
 
-#define RING_BUF_TEST_DEFAULT_BUFFER_SIZE 1
-static uint8_t default_buffer[RING_BUF_TEST_DEFAULT_BUFFER_SIZE];
+#define RING_BUF_TEST_DEFAULT_NUM_ELEMS 1
+static uint8_t default_buffer[RING_BUF_TEST_DEFAULT_NUM_ELEMS * sizeof(uint8_t)];
 
 static void populate_default_init_cfg(RingBufInitCfg *const cfg)
 {
@@ -25,6 +25,7 @@ static void populate_default_init_cfg(RingBufInitCfg *const cfg)
     cfg->get_inst_buf_user_data = get_inst_buf_user_data;
     cfg->buffer = default_buffer;
     cfg->elem_size = sizeof(uint8_t);
+    cfg->num_elems = RING_BUF_TEST_DEFAULT_NUM_ELEMS;
 }
 
 // clang-format off
@@ -68,8 +69,9 @@ static void pop(void *element)
 TEST(RingBuf, PushPopUint16)
 {
     uint16_t buffer;
-    init_cfg.buffer = (uint8_t *)&buffer;
+    init_cfg.buffer = &buffer;
     init_cfg.elem_size = sizeof(uint16_t);
+    init_cfg.num_elems = 1;
 
     uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
     CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
@@ -86,8 +88,9 @@ TEST(RingBuf, PushPopUint16)
 TEST(RingBuf, PushPopUint32)
 {
     uint32_t buffer;
-    init_cfg.buffer = (uint8_t *)&buffer;
+    init_cfg.buffer = &buffer;
     init_cfg.elem_size = sizeof(uint32_t);
+    init_cfg.num_elems = 1;
 
     uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
     CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
@@ -104,8 +107,9 @@ TEST(RingBuf, PushPopUint32)
 TEST(RingBuf, PushPopThreeElemsUint8)
 {
     uint8_t buffer[3];
-    init_cfg.buffer = (uint8_t *)&buffer;
+    init_cfg.buffer = &buffer;
     init_cfg.elem_size = sizeof(uint8_t);
+    init_cfg.num_elems = 3;
 
     uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
     CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
@@ -127,4 +131,28 @@ TEST(RingBuf, PushPopThreeElemsUint8)
     CHECK_EQUAL(elem_1, popped_elem_1);
     CHECK_EQUAL(elem_2, popped_elem_2);
     CHECK_EQUAL(elem_3, popped_elem_3);
+}
+
+static void push_pop_uint16(uint16_t elem)
+{
+    uint16_t elem_popped = 0;
+    push(&elem);
+    pop(&elem_popped);
+    CHECK_EQUAL(elem, elem_popped);
+}
+
+TEST(RingBuf, PushPopUint16MoreThanBufSize)
+{
+    uint16_t buffer[2];
+    init_cfg.buffer = &buffer;
+    init_cfg.elem_size = sizeof(uint16_t);
+    init_cfg.num_elems = 2;
+
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    push_pop_uint16(0x1234);
+    push_pop_uint16(0x5678);
+    push_pop_uint16(0x9ABC);
+    push_pop_uint16(0xDEF0);
 }
