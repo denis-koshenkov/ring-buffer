@@ -56,6 +56,7 @@ typedef struct {
 
 typedef enum {
     RING_BUF_RESULT_CODE_OK,
+    RING_BUF_RESULT_CODE_NO_DATA,
 } RingBufResultCode;
 
 uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg);

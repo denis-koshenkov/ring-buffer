@@ -156,3 +156,13 @@ TEST(RingBuf, PushPopUint16MoreThanBufSize)
     push_pop_uint16(0x9ABC);
     push_pop_uint16(0xDEF0);
 }
+
+TEST(RingBuf, InitialPopFails)
+{
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    uint16_t elem = 0;
+    uint8_t rc = ring_buf_pop(ring_buf, &elem);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc);
+}
