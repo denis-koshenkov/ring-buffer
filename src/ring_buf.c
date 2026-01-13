@@ -64,5 +64,6 @@ uint8_t ring_buf_pop(RingBuf self, void *const element)
 
     memcpy(element, self->buffer + (self->tail * self->elem_size), self->elem_size);
     self->tail = (self->tail + 1) % self->num_elems;
+    self->full = false;
     return RING_BUF_RESULT_CODE_OK;
 }

@@ -190,3 +190,31 @@ TEST(RingBuf, PushFailsWhenFull)
     uint8_t rc = ring_buf_push(ring_buf, &elem_5);
     CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc);
 }
+
+TEST(RingBuf, PushAfterFull)
+{
+    uint16_t buffer[2];
+    init_cfg.buffer = &buffer;
+    init_cfg.elem_size = sizeof(uint16_t);
+    init_cfg.num_elems = 2;
+
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    uint16_t elem1 = 0x0385;
+    uint16_t elem2 = 0xDC7A;
+    uint16_t elem3 = 0xDC7A;
+    uint16_t popped_elem1 = 0;
+    uint16_t popped_elem2 = 0;
+    uint16_t popped_elem3 = 0;
+
+    push(&elem1);
+    push(&elem2);
+
+    /* At this point, buffer is full */
+    pop(&popped_elem1);
+    CHECK_EQUAL(elem1, popped_elem1);
+
+    /* There is now one free slot - push should succeed */
+    push(&elem3);
+}
