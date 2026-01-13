@@ -53,6 +53,18 @@ TEST(RingBuf, CreateReturnsBufReturnedFromGetInstBuf)
     CHECK_EQUAL((void *)&inst_buf, (void *)ring_buf);
 }
 
+static void push(void *element)
+{
+    uint8_t rc = ring_buf_push(ring_buf, element);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, rc);
+}
+
+static void pop(void *element)
+{
+    uint8_t rc = ring_buf_pop(ring_buf, element);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, rc);
+}
+
 TEST(RingBuf, PushPopUint16)
 {
     uint16_t buffer;
@@ -63,12 +75,10 @@ TEST(RingBuf, PushPopUint16)
     CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
 
     uint16_t push_element = 0xABCD;
-    uint8_t push_rc = ring_buf_push(ring_buf, &push_element);
-    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, push_rc);
+    push(&push_element);
 
     uint16_t pop_element = 0;
-    uint8_t pop_rc = ring_buf_pop(ring_buf, &pop_element);
-    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, pop_rc);
+    pop(&pop_element);
 
     CHECK_EQUAL(push_element, pop_element);
 }
@@ -83,12 +93,38 @@ TEST(RingBuf, PushPopUint32)
     CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
 
     uint32_t push_element = 0x5A5AA50F;
-    uint8_t push_rc = ring_buf_push(ring_buf, &push_element);
-    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, push_rc);
+    push(&push_element);
 
     uint32_t pop_element = 0;
-    uint8_t pop_rc = ring_buf_pop(ring_buf, &pop_element);
-    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, pop_rc);
+    pop(&pop_element);
 
     CHECK_EQUAL(push_element, pop_element);
+}
+
+TEST(RingBuf, PushPopThreeElemsUint8)
+{
+    uint8_t buffer[3];
+    init_cfg.buffer = (uint8_t *)&buffer;
+    init_cfg.elem_size = sizeof(uint8_t);
+
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    uint8_t elem_1 = 0xA1;
+    uint8_t elem_2 = 0x0F;
+    uint8_t elem_3 = 0xBB;
+    push(&elem_1);
+    push(&elem_2);
+    push(&elem_3);
+
+    uint8_t popped_elem_1 = 0;
+    uint8_t popped_elem_2 = 0;
+    uint8_t popped_elem_3 = 0;
+    pop(&popped_elem_1);
+    pop(&popped_elem_2);
+    pop(&popped_elem_3);
+
+    CHECK_EQUAL(elem_1, popped_elem_1);
+    CHECK_EQUAL(elem_2, popped_elem_2);
+    CHECK_EQUAL(elem_3, popped_elem_3);
 }
