@@ -44,13 +44,15 @@ typedef struct RingBufStruct *RingBuf;
 typedef void *(*RingBufGetInstBuf)(void *user_data);
 
 typedef struct {
+    /** Function to get memory buffer for the instance. See @ref RingBufGetInstBuf. Cannot be NULL. */
     RingBufGetInstBuf get_inst_buf;
+    /** User data argument to pass to the get_inst_buf function. */
     void *get_inst_buf_user_data;
-    /** Size of one element in bytes. */
+    /** Size of one element in bytes. Must be > 0. */
     size_t elem_size;
-    /** Maximum number of elements that can be in the buffer at the same time. */
+    /** Maximum number of elements that can be in the buffer at the same time. Must be > 0. */
     size_t num_elems;
-    /** Buffer to store the elements, must be of size (num_elements * elem_size). */
+    /** Buffer to store the elements, must be of size (num_elems * elem_size). Cannot be NULL. */
     void *buffer;
 } RingBufInitCfg;
 
@@ -60,10 +62,41 @@ typedef enum {
     RING_BUF_RESULT_CODE_NO_DATA,
 } RingBufResultCode;
 
+/**
+ * @brief Create a ring buffer instance.
+ *
+ * @param[out] inst Created instance is written to this parameter.
+ * @param[in] cfg Init config.
+ *
+ * @retval RING_BUF_RESULT_CODE_OK Successfully created instance.
+ * @retval @p inst is NULL, @p cfg is NULL, or one of the fields in @p cfg is invalid.
+ */
 uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg);
 
+/**
+ * @brief Push an element to the ring buffer.
+ *
+ * @param[in] self Ring buffer instance created by @ref ring_buf_create.
+ * @param[in] element Element to push. Must point to a buffer of size "elem_size" bytes that was passed to the init cfg.
+ * The element is copied into the buffer by value.
+ *
+ * @retval RING_BUF_RESULT_CODE_OK Successfully pushed an element into the buffer.
+ * @retval RING_BUF_RESULT_CODE_NO_DATA Buffer is full, failed to push element.
+ * @retval RING_BUF_RESULT_CODE_INVAL_ARG @p self is NULL or @p element is NULL.
+ */
 uint8_t ring_buf_push(RingBuf self, const void *const element);
 
+/**
+ * @brief Pop an element from the ring buffer.
+ *
+ * @param[in] self Ring buffer instance created by @ref ring_buf_create.
+ * @param[out] element Buffer to write the popped element into. Must point to a buffer of size "elem_size" bytes that
+ * was passed to the init cfg.
+ *
+ * @retval RING_BUF_RESULT_CODE_OK Successfully popped an element from the buffer.
+ * @retval RING_BUF_RESULT_CODE_NO_DATA Buffer is empty, failed to pop element.
+ * @retval RING_BUF_RESULT_CODE_INVAL_ARG @p self is NULL or @p element is NULL.
+ */
 uint8_t ring_buf_pop(RingBuf self, void *const element);
 
 #ifdef __cplusplus

@@ -7,7 +7,7 @@
 /**
  * @brief Check whether init config is valid.
  *
- * @param cfg Init config.
+ * @param[in] cfg Init config.
  *
  * @retval true Init config is valid.
  * @retval false Init config is invalid.
