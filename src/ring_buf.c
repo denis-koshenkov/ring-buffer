@@ -1,7 +1,29 @@
 #include <string.h>
+#include <stdbool.h>
 
 #include "ring_buf.h"
 #include "ring_buf_private.h"
+
+/**
+ * @brief Check whether init config is valid.
+ *
+ * @param cfg Init config.
+ *
+ * @retval true Init config is valid.
+ * @retval false Init config is invalid.
+ */
+static bool is_valid_cfg(const RingBufInitCfg *const cfg)
+{
+    // clang-format off
+    return (
+        cfg
+        && cfg->get_inst_buf
+        && (cfg->elem_size > 0)
+        && (cfg->num_elems > 0)
+        && cfg->buffer
+    );
+    // clang-format on
+}
 
 /**
  * @brief Check whether ring buffer is empty.
@@ -31,7 +53,7 @@ static bool is_full(RingBuf self)
 
 uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg)
 {
-    if (!inst) {
+    if (!inst || !is_valid_cfg(cfg)) {
         return RING_BUF_RESULT_CODE_INVAL_ARG;
     }
 

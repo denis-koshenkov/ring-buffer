@@ -46,3 +46,42 @@ TEST(RingBufNoSetup, CreateReturnsInvalArgInstNull)
 
     CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
 }
+
+TEST(RingBufNoSetup, CreateReturnsInvalArgCfgNull)
+{
+    uint8_t rc = ring_buf_create(&ring_buf, NULL);
+
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
+}
+
+TEST(RingBufNoSetup, CreateGetInstBufNull)
+{
+    init_cfg.get_inst_buf = NULL;
+    uint8_t rc = ring_buf_create(&ring_buf, &init_cfg);
+
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
+}
+
+TEST(RingBufNoSetup, CreateElemSize0)
+{
+    init_cfg.elem_size = 0;
+    uint8_t rc = ring_buf_create(&ring_buf, &init_cfg);
+
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
+}
+
+TEST(RingBufNoSetup, CreateNumElems0)
+{
+    init_cfg.num_elems = 0;
+    uint8_t rc = ring_buf_create(&ring_buf, &init_cfg);
+
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
+}
+
+TEST(RingBufNoSetup, CreateBufferNull)
+{
+    init_cfg.buffer = NULL;
+    uint8_t rc = ring_buf_create(&ring_buf, &init_cfg);
+
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
+}
