@@ -70,6 +70,9 @@ uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg)
 
 uint8_t ring_buf_push(RingBuf self, const void *const element)
 {
+    if (!self || !element) {
+        return RING_BUF_RESULT_CODE_INVAL_ARG;
+    }
     if (is_full(self)) {
         return RING_BUF_RESULT_CODE_NO_DATA;
     }
@@ -84,6 +87,9 @@ uint8_t ring_buf_push(RingBuf self, const void *const element)
 
 uint8_t ring_buf_pop(RingBuf self, void *const element)
 {
+    if (!self || !element) {
+        return RING_BUF_RESULT_CODE_INVAL_ARG;
+    }
     if (is_empty(self)) {
         return RING_BUF_RESULT_CODE_NO_DATA;
     }

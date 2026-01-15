@@ -403,3 +403,69 @@ TEST(RingBuf, StressTestSize3)
     uint8_t rc_6 = ring_buf_pop(ring_buf, &unused6);
     CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc_6);
 }
+
+TEST(RingBuf, PushSelfNull)
+{
+    uint8_t buffer;
+    init_cfg.buffer = &buffer;
+    init_cfg.elem_size = sizeof(uint8_t);
+    init_cfg.num_elems = 1;
+
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    uint8_t elem;
+    uint8_t rc = ring_buf_push(NULL, &elem);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
+}
+
+TEST(RingBuf, PushElementNull)
+{
+    uint8_t buffer;
+    init_cfg.buffer = &buffer;
+    init_cfg.elem_size = sizeof(uint8_t);
+    init_cfg.num_elems = 1;
+
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    uint8_t rc = ring_buf_push(ring_buf, NULL);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
+}
+
+TEST(RingBuf, PopSelfNull)
+{
+    uint8_t buffer;
+    init_cfg.buffer = &buffer;
+    init_cfg.elem_size = sizeof(uint8_t);
+    init_cfg.num_elems = 1;
+
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    /* Push an element so that pop would otherwise succeed */
+    uint8_t elem = 1;
+    push(&elem);
+
+    uint8_t popped_elem;
+    uint8_t rc = ring_buf_pop(NULL, &popped_elem);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
+}
+
+TEST(RingBuf, ElemNull)
+{
+    uint8_t buffer;
+    init_cfg.buffer = &buffer;
+    init_cfg.elem_size = sizeof(uint8_t);
+    init_cfg.num_elems = 1;
+
+    uint8_t create_rc = ring_buf_create(&ring_buf, &init_cfg);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_OK, create_rc);
+
+    /* Push an element so that pop would otherwise succeed */
+    uint8_t elem = 1;
+    push(&elem);
+
+    uint8_t rc = ring_buf_pop(ring_buf, NULL);
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
+}
