@@ -31,6 +31,10 @@ static bool is_full(RingBuf self)
 
 uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg)
 {
+    if (!inst) {
+        return RING_BUF_RESULT_CODE_INVAL_ARG;
+    }
+
     *inst = cfg->get_inst_buf(cfg->get_inst_buf_user_data);
 
     (*inst)->buffer = (uint8_t *)cfg->buffer;

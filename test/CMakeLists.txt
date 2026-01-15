@@ -3,6 +3,7 @@ add_executable(run_tests)
 target_sources(run_tests PRIVATE
     main.cpp
     ring_buf.cpp
+    ring_buf_no_setup.cpp
 )
 
 set(TESTS OFF) # Disable cpputest self-tests

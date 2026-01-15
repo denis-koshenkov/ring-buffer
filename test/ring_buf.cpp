@@ -11,10 +11,10 @@
 /* To return from mock_ring_buf_get_inst_buf */
 static struct RingBufStruct inst_buf;
 
-RingBuf ring_buf;
-RingBufInitCfg init_cfg;
+static RingBuf ring_buf;
+static RingBufInitCfg init_cfg;
 
-void *get_inst_buf_user_data = (void *)0x20;
+static void *get_inst_buf_user_data = (void *)0x20;
 
 #define RING_BUF_TEST_DEFAULT_NUM_ELEMS 1
 static uint8_t default_buffer[RING_BUF_TEST_DEFAULT_NUM_ELEMS * sizeof(uint8_t)];
