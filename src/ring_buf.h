@@ -69,7 +69,7 @@ typedef enum {
  * @param[in] cfg Init config.
  *
  * @retval RING_BUF_RESULT_CODE_OK Successfully created instance.
- * @retval @p inst is NULL, @p cfg is NULL, or one of the fields in @p cfg is invalid.
+ * @retval RING_BUF_RESULT_CODE_INVAL_ARG @p inst is NULL, @p cfg is NULL, or one of the fields in @p cfg is invalid.
  */
 uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg);
 

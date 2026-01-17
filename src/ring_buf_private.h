@@ -7,6 +7,8 @@ extern "C"
 #endif
 
 #include <stdbool.h>
+#include <stdint.h>
+#include <stddef.h>
 
 struct RingBufStruct {
     /** Buffer to hold the elements. uint8_t so that it is easy to do byte pointer arithmetic on it. */
