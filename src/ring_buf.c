@@ -58,6 +58,9 @@ uint8_t ring_buf_create(RingBuf *const inst, const RingBufInitCfg *const cfg)
     }
 
     *inst = cfg->get_inst_buf(cfg->get_inst_buf_user_data);
+    if (!(*inst)) {
+        return RING_BUF_RESULT_CODE_NO_DATA;
+    }
 
     (*inst)->buffer = (uint8_t *)cfg->buffer;
     (*inst)->elem_size = cfg->elem_size;

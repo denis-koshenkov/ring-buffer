@@ -85,3 +85,15 @@ TEST(RingBufNoSetup, CreateBufferNull)
 
     CHECK_EQUAL(RING_BUF_RESULT_CODE_INVAL_ARG, rc);
 }
+
+TEST(RingBufNoSetup, CreateGetInstBufReturnsNull)
+{
+    mock()
+        .expectOneCall("mock_ring_buf_get_inst_buf")
+        .withParameter("user_data", get_inst_buf_user_data)
+        .andReturnValue((void *)NULL);
+
+    uint8_t rc = ring_buf_create(&ring_buf, &init_cfg);
+
+    CHECK_EQUAL(RING_BUF_RESULT_CODE_NO_DATA, rc);
+}
